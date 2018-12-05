@@ -1,5 +1,10 @@
 body {
-  text-align: center;
   font-family: "Oswald", sans-serif;
   color: rgb(50, 50, 50);
+}
+
+.cell {
+  height: 50px;
+  width: 5px;
+  fill: red;
 }

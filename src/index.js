@@ -6,9 +6,10 @@ req.open("GET", "/src/data.json", true);
 req.send();
 req.onload = function() {
   const json = JSON.parse(req.responseText);
-  const w = 886;
-  const h = 600;
+  const w = 1410;
+  const h = 700;
   const padding = 50;
+  const baseTemp = json.baseTemperature;
   const xScale = d3
     .scaleLinear()
     .domain([
@@ -30,7 +31,7 @@ req.onload = function() {
       new Date().setMonth(0),
       new Date().setMonth(11)
     ])
-    .range([h - padding, padding]);
+    .range([h-padding, padding]);
   const xAxis = d3
     .axisBottom(xScale)
     .ticks(26)
@@ -49,14 +50,11 @@ req.onload = function() {
     .enter()
     .append("rect")
     .attr("class", "cell")
-    .attr("x", (d, i) =>
-      xScale(new Date().setFullYear(d.year))
-    )
-    .attr("y", (d, i) =>
-      yScale(new Date().setMonth(d.month - 1))
-    )
-    .attr("height", "10px")
-    .attr("width", "3px");
+    .attr("x", (d)=> xScale(new Date().setFullYear(d.year)))
+    .attr("y", (d)=> h-padding-yScale(new Date().setMonth(d.month-1)))
+    .attr('data-month',(d)=>new Date().setMonth(d.month))
+    .attr('data-year',(d)=>new Date().setFullYear(d.year))
+    .attr('data-temp',(d)=> baseTemp + d.variance);
   svg
     .append("g")
     .attr(
