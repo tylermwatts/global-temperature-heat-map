@@ -1,0 +1,19 @@
+{
+  "name": "global-surface-temperature-heat-map",
+  "version": "1.0.0",
+  "description": "freeCodeCamp Data Visualization project to create a heat map showing the global land surface temperature by month for every year from 1753 to 2015. Link to challenge: https://learn.freecodecamp.org/data-visualization/data-visualization-projects/visualize-data-with-a-heat-map",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "d3": "5.7.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "@types/d3": "5.0.1",
+    "parcel-bundler": "^1.6.1"
+  },
+  "keywords": []
+}
