@@ -31,8 +31,13 @@ req.onload = function() {
       new Date().setMonth(11)
     ])
     .range([h - padding, padding]);
-  const xAxis = d3.axisBottom(xScale);
-  const yAxis = d3.axisLeft(yScale);
+  const xAxis = d3
+    .axisBottom(xScale)
+    .ticks(26)
+    .tickFormat(d3.timeFormat("%Y"));
+  const yAxis = d3
+    .axisLeft(yScale)
+    .tickFormat(d3.timeFormat("%b"));
   const svg = d3
     .select("body")
     .append("svg")
@@ -40,15 +45,29 @@ req.onload = function() {
     .attr("height", h);
   svg
     .selectAll("rect")
-    .data(json)
+    .data(json.monthlyVariance)
     .enter()
     .append("rect")
-    .attr("class", "cell");
+    .attr("class", "cell")
+    .attr("x", (d, i) =>
+      xScale(new Date().setFullYear(d.year))
+    )
+    .attr("y", (d, i) =>
+      yScale(new Date().setMonth(d.month - 1))
+    )
+    .attr("height", "10px")
+    .attr("width", "3px");
   svg
     .append("g")
     .attr(
       "transform",
-      "translate(0" + (h - padding) + ")"
+      "translate(0," + (h - padding) + ")"
     )
-    .call(xAxis);
+    .call(xAxis)
+    .attr("id", "x-axis");
+  svg
+    .append("g")
+    .attr("transform", "translate(" + padding + ",0)")
+    .call(yAxis)
+    .attr("id", "y-axis");
 };
