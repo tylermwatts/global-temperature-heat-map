@@ -11,38 +11,39 @@ req.onload = function() {
   const padding = 50;
   const baseTemp = json.baseTemperature;
   const xScale = d3
-    .scaleLinear()
+    .scaleTime()
     .domain([
       d3.min(
-        json.monthlyVariance.map(d => {
-          var date = new Date();
-          date.setFullYear(d.year);
-          return date;
-        })
+        json.monthlyVariance.map(d =>
+          new Date().setFullYear(d.year)
+        )
       ),
       d3.max(
-        json.monthlyVariance.map(d => {
-          var date = new Date();
-          date.setFullYear(d.year);
-          return date;
-        })
+        json.monthlyVariance.map(d =>
+          new Date().setFullYear(d.year)
+        )
       )
     ])
     .range([padding, w - padding]);
   const yScale = d3
-    .scaleLinear()
-    .domain([0, 11])
+    .scaleTime()
+    .domain([
+      new Date().setMonth(0),
+      new Date().setMonth(11)
+    ])
     .range([h - padding, padding]);
   const xAxis = d3
     .axisBottom(xScale)
     .ticks(26)
     .tickFormat(d3.timeFormat("%Y"));
-  const yAxis = d3.axisLeft(yScale).ticks(12);
+  const yAxis = d3
+    .axisLeft(yScale)
+    .tickFormat(d3.timeFormat("%b"));
   const svg = d3
     .select("body")
     .append("svg")
-    .attr("width", w)
-    .attr("height", h);
+    .attr("width", w + padding)
+    .attr("height", h + padding);
   svg
     .selectAll("rect")
     .data(json.monthlyVariance)
@@ -52,13 +53,13 @@ req.onload = function() {
     .attr("x", d =>
       xScale(new Date().setFullYear(d.year))
     )
-    .attr("y", d => h - padding - yScale(d.month - 1))
-    .attr("data-month", d =>
-      new Date().setMonth(d.month)
+    .attr(
+      "y",
+      d =>
+        h - yScale(new Date().setMonth(d.month - 1))
     )
-    .attr("data-year", d =>
-      new Date().setFullYear(d.year)
-    )
+    .attr("data-month", d => d.month - 1)
+    .attr("data-year", d => d.year)
     .attr("data-temp", d => baseTemp + d.variance);
   svg
     .append("g")
@@ -70,7 +71,7 @@ req.onload = function() {
     .attr("id", "x-axis");
   svg
     .append("g")
-    .attr("transform", "translate(" + padding + ",0)")
+    .attr("transform", "translate(50,0)")
     .call(yAxis)
     .attr("id", "y-axis");
 };
