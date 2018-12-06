@@ -4,7 +4,7 @@ body {
 }
 
 .cell {
-  height: 50px;
-  width: 5px;
+  height: 33px;
+  width: 3px;
   fill: red;
 }

@@ -7,38 +7,37 @@ req.send();
 req.onload = function() {
   const json = JSON.parse(req.responseText);
   const w = 1410;
-  const h = 700;
+  const h = 600;
   const padding = 50;
   const baseTemp = json.baseTemperature;
   const xScale = d3
     .scaleLinear()
     .domain([
       d3.min(
-        json.monthlyVariance.map(d =>
-          new Date().setFullYear(d.year)
-        )
+        json.monthlyVariance.map(d => {
+          var date = new Date();
+          date.setFullYear(d.year);
+          return date;
+        })
       ),
       d3.max(
-        json.monthlyVariance.map(d =>
-          new Date().setFullYear(d.year)
-        )
+        json.monthlyVariance.map(d => {
+          var date = new Date();
+          date.setFullYear(d.year);
+          return date;
+        })
       )
     ])
     .range([padding, w - padding]);
   const yScale = d3
     .scaleLinear()
-    .domain([
-      new Date().setMonth(0),
-      new Date().setMonth(11)
-    ])
-    .range([h-padding, padding]);
+    .domain([0, 11])
+    .range([h - padding, padding]);
   const xAxis = d3
     .axisBottom(xScale)
     .ticks(26)
     .tickFormat(d3.timeFormat("%Y"));
-  const yAxis = d3
-    .axisLeft(yScale)
-    .tickFormat(d3.timeFormat("%b"));
+  const yAxis = d3.axisLeft(yScale).ticks(12);
   const svg = d3
     .select("body")
     .append("svg")
@@ -50,11 +49,17 @@ req.onload = function() {
     .enter()
     .append("rect")
     .attr("class", "cell")
-    .attr("x", (d)=> xScale(new Date().setFullYear(d.year)))
-    .attr("y", (d)=> h-padding-yScale(new Date().setMonth(d.month-1)))
-    .attr('data-month',(d)=>new Date().setMonth(d.month))
-    .attr('data-year',(d)=>new Date().setFullYear(d.year))
-    .attr('data-temp',(d)=> baseTemp + d.variance);
+    .attr("x", d =>
+      xScale(new Date().setFullYear(d.year))
+    )
+    .attr("y", d => h - padding - yScale(d.month - 1))
+    .attr("data-month", d =>
+      new Date().setMonth(d.month)
+    )
+    .attr("data-year", d =>
+      new Date().setFullYear(d.year)
+    )
+    .attr("data-temp", d => baseTemp + d.variance);
   svg
     .append("g")
     .attr(
