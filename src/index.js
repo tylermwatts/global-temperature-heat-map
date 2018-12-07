@@ -65,8 +65,8 @@ req.onload = function() {
     .attr("id", "tooltip")
     .style("opacity", 0)
     .style("position", "absolute")
-    .style("height", "25px")
-    .style("width", "150px")
+    .style("height", "50px")
+    .style("width", "80px")
     .style("background-color", "white")
     .style("border", "2px solid black");
   svg
