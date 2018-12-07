@@ -70,20 +70,32 @@ req.onload = function() {
     .attr("data-temp", d => baseTemp + d.variance)
     .style("fill", d => {
       let temp = baseTemp + d.variance;
-      if (temp <= 5) {
+      if (temp <= 3) {
         return "blue";
       }
-      if (temp > 5 && temp <= 7) {
-        return "aqua";
+      if (temp > 3 && temp <= 5) {
+        return "deepskyblue";
       }
-      if (temp > 7 && temp < 8) {
+      if (temp > 5 && temp <= 7) {
+        return "skyblue";
+      }
+      if (temp > 7 && temp <= 7.5) {
+        return "antiquewhite";
+      }
+      if (temp > 7.5 && temp <= 8) {
         return "bisque";
       }
-      if (temp >= 8 && temp <= 10) {
+      if (temp > 8 && temp <= 9) {
         return "orange";
       }
-      if (temp > 10) {
+      if (temp > 9 && temp <= 10) {
+        return "orangered";
+      }
+      if (temp > 10 && temp < 11.5) {
         return "red";
+      }
+      if (temp > 11.5) {
+        return "crimson";
       }
     });
   svg
