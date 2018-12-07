@@ -56,7 +56,19 @@ req.onload = function() {
     .select("body")
     .append("svg")
     .attr("width", w)
-    .attr("height", h);
+    .attr("height", h)
+    .attr("id", "chart");
+  let tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .attr("id", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("height", "25px")
+    .style("width", "150px")
+    .style("background-color", "white")
+    .style("border", "2px solid black");
   svg
     .selectAll("rect")
     .data(json.monthlyVariance)
@@ -97,6 +109,23 @@ req.onload = function() {
       if (temp > 11.5) {
         return "crimson";
       }
+    })
+    .on("mouseover", function(d) {
+      tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0.9);
+      tooltip
+        .html(`Year: ${d.year}\nVar: ${d.variance}`)
+        .style("left", d3.event.pageX + "px")
+        .style("top", d3.event.pageY - 28 + "px");
+      tooltip.attr("data-year", d.year);
+    })
+    .on("mouseout", function(d) {
+      tooltip
+        .transition()
+        .duration(400)
+        .style("opacity", 0);
     });
   svg
     .append("g")
