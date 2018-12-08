@@ -7,9 +7,34 @@ req.send();
 req.onload = function() {
   const json = JSON.parse(req.responseText);
   const w = 1430;
-  const h = 480;
+  const h = 580;
   const padding = 60;
+  const bottomMargin = 100;
   const baseTemp = json.baseTemperature;
+  const legendData = {
+    colors: [
+      "blue",
+      "deepskyblue",
+      "skyblue",
+      "antiquewhite",
+      "bisque",
+      "orange",
+      "orangered",
+      "red",
+      "crimson"
+    ],
+    text: [
+      "3",
+      "4 - 5",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10 - 11",
+      "11.5+"
+    ]
+  };
   const xScale = d3
     .scaleLinear()
     .domain([
@@ -20,38 +45,42 @@ req.onload = function() {
   const yScale = d3
     .scaleBand()
     .domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-    .range([h - padding, padding]);
-  const xAxis = d3.axisBottom(xScale).tickFormat(d => d.toString());
-  const yAxis = d3.axisLeft(yScale).tickFormat(function(d) {
-    switch (d) {
-      case 0:
-        return "January";
-      case 1:
-        return "February";
-      case 2:
-        return "March";
-      case 3:
-        return "April";
-      case 4:
-        return "May";
-      case 5:
-        return "June";
-      case 6:
-        return "July";
-      case 7:
-        return "August";
-      case 8:
-        return "September";
-      case 9:
-        return "October";
-      case 10:
-        return "November";
-      case 11:
-        return "December";
-      default:
-        return "";
-    }
-  });
+    .range([h - padding - bottomMargin, padding]);
+  const xAxis = d3
+    .axisBottom(xScale)
+    .tickFormat(d => d.toString());
+  const yAxis = d3
+    .axisLeft(yScale)
+    .tickFormat(function(d) {
+      switch (d) {
+        case 0:
+          return "January";
+        case 1:
+          return "February";
+        case 2:
+          return "March";
+        case 3:
+          return "April";
+        case 4:
+          return "May";
+        case 5:
+          return "June";
+        case 6:
+          return "July";
+        case 7:
+          return "August";
+        case 8:
+          return "September";
+        case 9:
+          return "October";
+        case 10:
+          return "November";
+        case 11:
+          return "December";
+        default:
+          return "";
+      }
+    });
   const svg = d3
     .select("body")
     .append("svg")
@@ -59,16 +88,11 @@ req.onload = function() {
     .attr("height", h)
     .attr("id", "chart");
   let tooltip = d3
-    .select("body")
+    .select("#chart")
     .append("div")
     .attr("class", "tooltip")
     .attr("id", "tooltip")
-    .style("opacity", 0)
-    .style("position", "absolute")
-    .style("height", "50px")
-    .style("width", "80px")
-    .style("background-color", "white")
-    .style("border", "2px solid black");
+    .style("opacity", 0);
   svg
     .selectAll("rect")
     .data(json.monthlyVariance)
@@ -111,14 +135,15 @@ req.onload = function() {
       }
     })
     .on("mouseover", function(d) {
+      d3.selectAll(this).style("stroke", "black");
       tooltip
         .transition()
         .duration(200)
         .style("opacity", 0.9);
       tooltip
-        .html(`Year: ${d.year}\nVar: ${d.variance}`)
+        .html(`Year: ${d.year}\nVar: ${d.variance}C`)
         .style("left", d3.event.pageX + "px")
-        .style("top", d3.event.pageY - 28 + "px");
+        .style("top", d3.event.pageY + "px");
       tooltip.attr("data-year", d.year);
     })
     .on("mouseout", function(d) {
@@ -129,7 +154,12 @@ req.onload = function() {
     });
   svg
     .append("g")
-    .attr("transform", "translate(0," + (h - padding) + ")")
+    .attr(
+      "transform",
+      "translate(0," +
+        (h - padding - bottomMargin) +
+        ")"
+    )
     .call(xAxis)
     .attr("id", "x-axis");
   svg
@@ -137,4 +167,27 @@ req.onload = function() {
     .attr("transform", "translate(" + padding + ",0)")
     .call(yAxis)
     .attr("id", "y-axis");
+  const legend = svg
+    .append("g")
+    .attr("transform", "translate(60,480)")
+    .attr("id", "legend");
+  legend
+    .selectAll("rect")
+    .data(legendData.colors)
+    .enter()
+    .append("rect")
+    .attr("x", (d, i) => 50 * i)
+    .attr("y", 0)
+    .attr("height", 30)
+    .attr("width", 50)
+    .style("fill", d => d);
+  legend
+    .selectAll("text")
+    .data(legendData.text)
+    .enter()
+    .append("text")
+    .attr("x", (d, i) => i * 50)
+    .attr("y", -5)
+    .text(d => d + "C")
+    .style("font-size", 12);
 };
